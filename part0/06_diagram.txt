@@ -1,0 +1,10 @@
+note over browser:
+on form submission,
+browser executes event handler
+which adds new note to DOM,
+rerenders list of notes,
+and sends POST request below
+end note
+
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+server-->browser: status 201 created
