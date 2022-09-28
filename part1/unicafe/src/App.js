@@ -22,16 +22,29 @@ const Statistic = ({ text, text2, value }) => {
   )
 }
 
+const Statistics = ({ values }) => {
+  const [good, neutral, bad] = values
+  const total = good + neutral + bad
+  return (
+    <div>
+    <Statistic text={'good'} value={good} />
+    <Statistic text={'neutral'} value={neutral} />
+    <Statistic text={'bad'} value={bad} />
+    <Statistic text={'all'} value={total} />
+    <Statistic text={'average'} value={(good - bad) / total} />
+    <Statistic text={'positive'} value={good / total * 100} text2={'%'} />
+    </div>
+  )
+}
+
 const App = () => {
   // save clicks of each button to its own state
   const [good, setGood] = useState(0)
   const [neutral, setNeutral] = useState(0)
   const [bad, setBad] = useState(0)
-  const [total, setTotal] = useState(0)
   
   const handleClick = (val, setVal) => {
     setVal(val + 1)
-    setTotal(total + 1)
   }
 
   return (
@@ -41,12 +54,7 @@ const App = () => {
       <Button handleClick={() => handleClick(neutral, setNeutral)} text={'neutral'} />
       <Button handleClick={() => handleClick(bad, setBad)} text={'bad'} />
       <Header name={'statistics'} />
-      <Statistic text={'good'} value={good} />
-      <Statistic text={'neutral'} value={neutral} />
-      <Statistic text={'bad'} value={bad} />
-      <Statistic text={'all'} value={total} />
-      <Statistic text={'average'} value={(good - bad) / total} />
-      <Statistic text={'positive'} value={good / total * 100} text2={'%'} />
+      <Statistics values={[good, neutral, bad]} />
     </div>
   )
 }
