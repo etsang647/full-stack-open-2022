@@ -25,14 +25,21 @@ const Statistic = ({ text, text2, value }) => {
 const Statistics = ({ values }) => {
   const [good, neutral, bad] = values
   const total = good + neutral + bad
+  if (total === 0) {
+    return (
+      <p>
+        No feedback given
+      </p>
+    )
+  }
   return (
     <div>
-    <Statistic text={'good'} value={good} />
-    <Statistic text={'neutral'} value={neutral} />
-    <Statistic text={'bad'} value={bad} />
-    <Statistic text={'all'} value={total} />
-    <Statistic text={'average'} value={(good - bad) / total} />
-    <Statistic text={'positive'} value={good / total * 100} text2={'%'} />
+      <Statistic text={'good'} value={good} />
+      <Statistic text={'neutral'} value={neutral} />
+      <Statistic text={'bad'} value={bad} />
+      <Statistic text={'all'} value={total} />
+      <Statistic text={'average'} value={(good - bad) / total} />
+      <Statistic text={'positive'} value={good / total * 100} text2={'%'} />
     </div>
   )
 }
