@@ -2,6 +2,56 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import personsService from './services/persons'
 
+const Notification = ({ message }) => {
+  return (
+    <div>
+      {message}
+    </div>
+  )
+}
+
+const SuccessNotification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+
+  const successNotificationStyle = {
+    color: 'green',
+    background: 'lightgrey',
+    fontSize: 20,
+    borderStyle: 'solid',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10
+  }
+  return (
+    <div style={successNotificationStyle}>
+      <Notification message={message} />
+    </div>
+  )
+}
+
+const ErrorNotification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+
+  const errorNotificationStyle = {
+    color: 'red',
+    background: 'lightgrey',
+    fontSize: 20,
+    borderStyle: 'solid',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10
+  }
+  return (
+    <div style={errorNotificationStyle}>
+      <Notification message={message} />
+    </div>
+  )
+}
+
 const Filter = ({ newFilter, handleFilterInput }) => {
   return (
     <div>
@@ -38,7 +88,7 @@ const PersonEntry = ({ person, deleteEntry }) => {
   )
 }
 
-const PersonList = ({ persons, setPersons }) => {
+const PersonList = ({ persons, setPersons, setErrorMessage }) => {
   const deleteEntry = (id) => {
     const person = persons.find(person => person.id === id)
     if (window.confirm(`Delete ${person.name}?`)) {
@@ -46,6 +96,13 @@ const PersonList = ({ persons, setPersons }) => {
         .delete(`http://localhost:3001/persons/${id}`)
         .then(response => {
           setPersons(persons.filter(person => person.id !== id))
+        })
+        .catch(error => {
+          setPersons(persons.filter(person => person.id !== id))
+          setErrorMessage(`Information of ${person.name} has already been removed from server`)
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
         })
     }
   }
@@ -63,6 +120,8 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
+  const [successMessage, setSuccessMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
   
   useEffect(() => {
     personsService
@@ -88,6 +147,10 @@ const App = () => {
         setPersons(persons.concat(returnedPerson))
         setNewName('')
         setNewNumber('')
+        setSuccessMessage(`Added ${returnedPerson.name}`)
+        setTimeout(() => {
+          setSuccessMessage(null)
+        }, 5000)
       })
   }
   
@@ -98,6 +161,16 @@ const App = () => {
         .update(person.id, changedPerson)
         .then(returnedPerson => {
           setPersons(persons.map(p => p.id !== person.id ? p : returnedPerson))
+          setSuccessMessage(`Updated ${returnedPerson.name}'s number to ${returnedPerson.number}`)
+          setTimeout(() => {
+            setSuccessMessage(null)
+          }, 5000)
+        })
+        .catch(error => {
+          setErrorMessage(`Information of ${person.name} has already been removed from server`)
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
         })
     }
   }
@@ -121,6 +194,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <SuccessNotification message={successMessage} />
+      <ErrorNotification message={errorMessage} />
       <Filter newFilter={newFilter} handleFilterInput={handleFilterInput} />
       <h2>add a new</h2>
       <PersonForm
@@ -129,7 +204,7 @@ const App = () => {
         newNumber={newNumber} handleNumberInput={handleNumberInput}
       />
       <h2>Numbers</h2>
-      <PersonList persons={personsToShow} setPersons={setPersons} />
+      <PersonList persons={personsToShow} setPersons={setPersons} setErrorMessage={setErrorMessage} />
     </div>
   )
 }
