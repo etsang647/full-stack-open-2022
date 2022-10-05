@@ -92,8 +92,8 @@ const PersonList = ({ persons, setPersons, setErrorMessage }) => {
   const deleteEntry = (id) => {
     const person = persons.find(person => person.id === id)
     if (window.confirm(`Delete ${person.name}?`)) {
-      axios
-        .delete(`http://localhost:3001/persons/${id}`)
+      personsService
+        .remove(person.id)
         .then(response => {
           setPersons(persons.filter(person => person.id !== id))
         })
@@ -152,6 +152,9 @@ const App = () => {
           setSuccessMessage(null)
         }, 5000)
       })
+      .catch(error => {
+        console.log(error.response.data.error);
+      })
   }
   
   const updateNumber = (person) => {
@@ -167,6 +170,7 @@ const App = () => {
           }, 5000)
         })
         .catch(error => {
+          console.log(error.response.data.error);
           setErrorMessage(`Information of ${person.name} has already been removed from server`)
           setTimeout(() => {
             setErrorMessage(null)
